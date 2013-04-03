@@ -11,3 +11,12 @@
 *.lai
 *.la
 *.a
+
+#Microsoft Visual Studio Files
+*.sdf
+*.opensdf
+*.ipch
+*.pdb
+
+Debug/
+ipch/

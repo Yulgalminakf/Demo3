@@ -11,6 +11,7 @@
 //#include "MeshSplitting.h"
 #include "Tga.h"
 #include "Color.h"
+#include "Tree.h"
 
 Matrix g_meshMatrix;
 
@@ -30,7 +31,7 @@ const Vector2 g_screenSize(g_screenWidth, g_screenHeight);
 
 //////////////////////////////////////////////////////////////////////////////////
 // Instancing Test
-#define NUM_OBJECTS 10000
+#define NUM_OBJECTS 100000
 Matrix g_matrices[NUM_OBJECTS];
 Vector3 g_colors[NUM_OBJECTS];
 unsigned int g_instanceTestShaderHandle = 0;
@@ -540,8 +541,8 @@ void Init()
 		z -= maxPos / 2.0f;
 		//x = 0.0f;
 		//y = 0.0f;
-		const static float minSize = 0.55f;
-		const static float maxSize = 2.5f;
+		const static float minSize = 0.05f;
+		const static float maxSize = 1.0f;
 		float size = (minSize == maxSize) ? minSize : (Utility::RandomDouble(false) * (maxSize - minSize)) + minSize;
 		float xRot = 0.0f, yRot = 0.0f, zRot = 0.0f;
 		xRot = rand() % 360;
@@ -565,6 +566,8 @@ void Init()
 		TwInit(TW_OPENGL, NULL);
 		TwWindowSize(g_screenWidth, g_screenHeight);
 		myBar = TwNewBar("Tweak");
+
+		Tree tree;
 	#endif // TWEAK_MENU
 
 	#if TWK_PROFILER
@@ -599,6 +602,7 @@ void Init()
 	g_oLookAt = g_defaultLookAt;
 
 	g_mesh.LoadFromFile("Meshes/cube.obj");
+	//g_mesh.LoadFromFile("Meshes/bunny.obj");
 
 	#if TWEAK_MENU
 	//	Boid *boid = Flocking::Get()->GetBoidAt(0);
@@ -628,7 +632,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					 LPTSTR    lpCmdLine,
 					 int       nCmdShow)
 {
-//	srand(time(0));
+	srand(time(0));
 
  	AllocConsole();
 	g_consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);

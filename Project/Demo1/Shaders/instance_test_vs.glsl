@@ -1,11 +1,9 @@
-uniform vec3 color;
-varying vec3 fragColor;
+attribute vec3 color;
 attribute mat4 matrix;
-varying out unsigned int instanceID;
+varying out vec3 fragColor;
 
 void main(void)
 {
 	fragColor = color;
-	instanceID = gl_InstanceID;
 	gl_Position = gl_ModelViewProjectionMatrix * matrix * gl_Vertex;
 }

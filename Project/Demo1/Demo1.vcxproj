@@ -99,9 +99,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathLibrary.cpp" />
+    <ClCompile Include="Noise.cpp" />
     <ClCompile Include="ObjMesh.cpp" />
     <ClCompile Include="Tga.cpp" />
     <ClCompile Include="Utility.cpp" />
@@ -109,12 +111,14 @@
   <ItemGroup>
     <ClInclude Include="Array.h" />
     <ClInclude Include="Collision.h" />
+    <ClInclude Include="Color.h" />
     <ClInclude Include="DefinedUtilities.h" />
     <ClInclude Include="glew.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="LightSource.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="MathLibrary.h" />
+    <ClInclude Include="Noise.h" />
     <ClInclude Include="ObjMesh.h" />
     <ClInclude Include="Tga.h" />
     <ClInclude Include="Utility.h" />

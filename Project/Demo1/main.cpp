@@ -10,6 +10,7 @@
 #include <time.h>
 //#include "MeshSplitting.h"
 #include "Tga.h"
+#include "Color.h"
 
 Matrix g_meshMatrix;
 
@@ -31,6 +32,7 @@ const Vector2 g_screenSize(g_screenWidth, g_screenHeight);
 // Instancing Test
 #define NUM_OBJECTS 10000
 Matrix g_matrices[NUM_OBJECTS];
+Vector3 g_colors[NUM_OBJECTS];
 unsigned int g_instanceTestShaderHandle = 0;
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -434,12 +436,16 @@ void RenderWorld()
         //glVertexAttribDivisor(matricesHandle + i, 1);
     }
 
+	unsigned int colorsHandle = glGetAttribLocation(g_instanceTestShaderHandle, "color");
+	glEnableVertexAttribArray(colorsHandle);
+	glVertexAttribPointer(colorsHandle, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), g_colors);
+	glVertexAttribDivisorARB(colorsHandle, 1);
 
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
-	unsigned int colorHandle = glGetUniformLocation(g_instanceTestShaderHandle, "color");
-	glUniform3f(colorHandle, 1,1,1);
+	//unsigned int colorHandle = glGetUniformLocation(g_instanceTestShaderHandle, "color");
+	//glUniform3f(colorHandle, 1,1,1);
 	glVertexPointer(3, GL_FLOAT, sizeof(Vector3), g_mesh.GetVertexPointer());
 	glDrawElementsInstanced(GL_TRIANGLES, g_mesh.GetIndicesSize(), GL_UNSIGNED_INT, g_mesh.GetIndicesPointer(), NUM_OBJECTS);
 
@@ -543,6 +549,7 @@ void Init()
 		zRot = rand() % 360;
 		g_matrices[i] = Matrix::CreateTranslation(Vector3(x, y, z)) * Matrix::CreateScaleUniform(size) * Matrix::CreateRotXYZ(xRot, yRot, zRot);
 
+		g_colors[i] = Color::GetColor((Color::CommonColor)(rand() % Color::CommonColor::Count));
 		/*
 		for(int j = 0; j < 3; ++j)
 		{

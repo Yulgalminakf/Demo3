@@ -1,5 +1,4 @@
-varying vec3 fragColor;
-varying in unsigned int instanceID;
+varying in vec3 fragColor;
 
 void main(void)  
 {

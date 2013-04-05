@@ -11,7 +11,6 @@
 //#include "MeshSplitting.h"
 #include "Tga.h"
 #include "Color.h"
-#include "Tree.h"
 
 Matrix g_meshMatrix;
 
@@ -532,13 +531,17 @@ void Init()
 	for(int i = 0; i < NUM_OBJECTS; ++i)
 	{
 		float x,y,z;
-		const static unsigned int maxPos = 1000;
-		x = rand() % maxPos;
-		y = rand() % maxPos;
-		z = rand() % maxPos;
-		x -= maxPos / 2.0f;
-		y -= maxPos / 2.0f;
-		z -= maxPos / 2.0f;
+		const static unsigned int posStep = 50;
+		const static unsigned int maxPos = 1000 / posStep;
+		x = rand() % (maxPos);
+		y = rand() % (maxPos);
+		z = rand() % (maxPos);
+		x -= (maxPos) / 2.0f;
+		y -= (maxPos) / 2.0f;
+		z -= (maxPos) / 2.0f;
+		x *= posStep;
+		y *= posStep;
+		z *= posStep;
 		//x = 0.0f;
 		//y = 0.0f;
 		const static float minSize = 0.05f;
@@ -567,7 +570,6 @@ void Init()
 		TwWindowSize(g_screenWidth, g_screenHeight);
 		myBar = TwNewBar("Tweak");
 
-		Tree tree;
 	#endif // TWEAK_MENU
 
 	#if TWK_PROFILER

@@ -23,6 +23,8 @@ namespace Utility
 	t_float RandomDouble(const bool canBeNegative = false);
 }
 
+unsigned int StrHash(const char* str);
+
 #pragma region Input
 
 enum buttons

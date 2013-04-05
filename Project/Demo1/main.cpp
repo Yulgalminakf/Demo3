@@ -11,6 +11,7 @@
 //#include "MeshSplitting.h"
 #include "Tga.h"
 #include "Color.h"
+#include "Brain.h"
 
 Matrix g_meshMatrix;
 

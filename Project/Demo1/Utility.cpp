@@ -21,6 +21,16 @@ t_float Utility::RandomDouble(const bool canBeNegative)
 	return randomFloat;
 }
 
+unsigned int StrHash(const char* str)
+{
+    unsigned int hash = 0;
+    while (*str)
+    {
+        hash = hash * 101  +  *str++;
+    }
+    return hash;
+}
+
 #pragma region Profiler
 
 #if PROFILER

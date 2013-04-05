@@ -6,6 +6,8 @@
 #define MAIN_H
 void Print(char* format, ...);
 
+#define MAX_NAME_SIZE 256
+
 const int g_screenWidth = 1024;
 const int g_screenHeight = 800;
 

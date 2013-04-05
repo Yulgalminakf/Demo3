@@ -721,7 +721,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					g_drawProfiler->Stop();
 				#endif //PROFILER
 				//--------------------------------------------------------------------------------------------
-
+					 
 				// Flush the screen
 				glFlush();
 				SwapBuffers(hDC);

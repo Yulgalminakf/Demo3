@@ -1,13 +1,17 @@
 #pragma once
 #include "main.h"
 #include "Utility.h"
+#include "DefinedUtilities.h"
 class Brain;
 
 class State
 {
-	Brain *m_brain;
+private:
 	char m_name[MAX_NAME_SIZE];
 	unsigned int m_nameHash;
+
+protected:
+	Brain *m_brain;
 
 public:
 	State(void);
@@ -19,8 +23,9 @@ public:
 	virtual void Stop()					{}
 	virtual void Reset()				{}
 
+	GETSET(Brain*, m_brain, Brain);
+
 	void SetName(const char* newName);
 	unsigned int GetNameHash()	{ return m_nameHash; }
 	const char* GetName()		{ return m_name; }
 };
-

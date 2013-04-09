@@ -1,3 +1,4 @@
+uniform mat4 uniformMatrix;
 varying in vec3 fragColor;
 
 void main(void)  

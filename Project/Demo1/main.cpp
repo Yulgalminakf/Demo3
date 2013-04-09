@@ -35,6 +35,13 @@ const Vector2 g_screenSize(g_screenWidth, g_screenHeight);
 Matrix g_matrices[NUM_OBJECTS];
 Vector3 g_colors[NUM_OBJECTS];
 unsigned int g_instanceTestShaderHandle = 0;
+Matrix g_globalMatrix,g_individualMatrix;
+Vector3 g_rot;
+Vector3 g_rotRate(100,50,25);
+float g_size;
+float g_maxSize = 0.5f,g_minSize = 2.0f;
+float g_totalTimePassed = 0;
+float g_sizeRate = 2.0f;
 //////////////////////////////////////////////////////////////////////////////////
 
 double g_deltaTime = 0.0;
@@ -288,6 +295,19 @@ void Update(double fDelta)
 
 		Print("\nFrames per second: %f\n", 1.0f / avgDt);
 	}
+
+	g_rot.x += g_rotRate.x * fDelta;
+	g_rot.y += g_rotRate.y * fDelta;
+	g_rot.z += g_rotRate.z * fDelta;
+
+	g_totalTimePassed += fDelta * g_sizeRate;
+	float pct = (sinf(g_totalTimePassed) + 1) / 2.0f;
+	g_size = pct * (g_maxSize - g_minSize) + g_minSize;
+
+	g_globalMatrix = Matrix::CreateRotXYZ(g_rot.x, g_rot.y, g_rot.z) * Matrix::CreateScaleUniform(g_size);
+	float otherSize = (1.0f - pct) * (g_maxSize - g_minSize) + g_minSize;
+	g_individualMatrix = Matrix::CreateRotXYZ(-g_rot.y, g_rot.x, g_rot.x) * Matrix::CreateScaleUniform(otherSize);
+
 #if MOVEMENT
 #pragma region Movement
 
@@ -447,6 +467,10 @@ void RenderWorld()
 	glEnableClientState(GL_VERTEX_ARRAY);
 	//unsigned int colorHandle = glGetUniformLocation(g_instanceTestShaderHandle, "color");
 	//glUniform3f(colorHandle, 1,1,1);
+
+	graphics->SetValue("globalMatrix", g_globalMatrix);
+	graphics->SetValue("individualMatrix", g_individualMatrix);
+
 	glVertexPointer(3, GL_FLOAT, sizeof(Vector3), g_mesh.GetVertexPointer());
 	glDrawElementsInstanced(GL_TRIANGLES, g_mesh.GetIndicesSize(), GL_UNSIGNED_INT, g_mesh.GetIndicesPointer(), NUM_OBJECTS);
 
@@ -532,7 +556,7 @@ void Init()
 	for(int i = 0; i < NUM_OBJECTS; ++i)
 	{
 		float x,y,z;
-		const static unsigned int posStep = 50;
+		const static unsigned int posStep = 1;
 		const static unsigned int maxPos = 1000 / posStep;
 		x = rand() % (maxPos);
 		y = rand() % (maxPos);
@@ -543,8 +567,6 @@ void Init()
 		x *= posStep;
 		y *= posStep;
 		z *= posStep;
-		//x = 0.0f;
-		//y = 0.0f;
 		const static float minSize = 0.05f;
 		const static float maxSize = 1.0f;
 		float size = (minSize == maxSize) ? minSize : (Utility::RandomDouble(false) * (maxSize - minSize)) + minSize;
@@ -552,7 +574,12 @@ void Init()
 		xRot = rand() % 360;
 		yRot = rand() % 360;
 		zRot = rand() % 360;
-		g_matrices[i] = Matrix::CreateTranslation(Vector3(x, y, z)) * Matrix::CreateScaleUniform(size) * Matrix::CreateRotXYZ(xRot, yRot, zRot);
+		float xRot2 = 0.0f, yRot2 = 0.0f, zRot2 = 0.0f;
+		xRot2 = rand() % 360;
+		yRot2 = rand() % 360;
+		zRot2 = rand() % 360;
+		float randomLength = (rand() % maxPos - (maxPos / 2.0f)) * posStep;
+		g_matrices[i] = Matrix::CreateRotXYZ(xRot2,yRot2,zRot2) * Matrix::CreateTranslation(Vector3(randomLength, 0.0f, 0.0f)) * Matrix::CreateScaleUniform(size) * Matrix::CreateRotXYZ(xRot, yRot, zRot);
 
 		g_colors[i] = Color::GetColor((Color::CommonColor)(rand() % Color::CommonColor::Count));
 		/*
@@ -570,8 +597,17 @@ void Init()
 		TwInit(TW_OPENGL, NULL);
 		TwWindowSize(g_screenWidth, g_screenHeight);
 		myBar = TwNewBar("Tweak");
-
 	#endif // TWEAK_MENU
+
+#if TWEAK_MENU
+	//	TwAddVarRW(TwkBar(), "Draw Neighbors", TW_TYPE_BOOL8, &boid->m_bDrawNeighbors, "");
+		TwAddVarRW(TwkBar(), "Rot Rate X", TW_TYPE_FLOAT, &g_rotRate.x, "min=0 precision=3");
+		TwAddVarRW(TwkBar(), "Rot Rate Y", TW_TYPE_FLOAT, &g_rotRate.y, "min=0 precision=3");
+		TwAddVarRW(TwkBar(), "Rot Rate Z", TW_TYPE_FLOAT, &g_rotRate.z, "min=0 precision=3");
+		TwAddVarRW(TwkBar(), "Max Size", TW_TYPE_FLOAT, &g_maxSize, "min=0 precision=3");
+		TwAddVarRW(TwkBar(), "Min Size", TW_TYPE_FLOAT, &g_minSize, "min=0 precision=3");
+		TwAddVarRW(TwkBar(), "Size Rate", TW_TYPE_FLOAT, &g_sizeRate, "min=0 precision=3");
+#endif
 
 	#if TWK_PROFILER
 		InitTwkBarProfiler();
@@ -649,7 +685,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 		Init();
 
 		//----------------------------------------------------------------------------------------------------------------------
-		
 
 		__int64 m_i64Frequency;
 		BOOL bPerformaceTimer = QueryPerformanceFrequency(( LARGE_INTEGER * ) &m_i64Frequency );

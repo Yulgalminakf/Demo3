@@ -26,7 +26,7 @@ unsigned int StrHash(const char* str)
     unsigned int hash = 0;
     while (*str)
     {
-        hash = hash * 101  +  *str++;
+        hash = hash * 3331  +  (unsigned char)(*(str++));
     }
     return hash;
 }

@@ -10,9 +10,11 @@ GridManager::GridManager(void)
 	m_bSelected = false;
 
 	memset(m_gridTypes, 0, sizeof(Grid*) * GridType_Count);
+	Graphics* g = Graphics::Get();
+
 	m_gridTypes[GridType_Brick] = new Grid("Textures/TilingBrickTexture.tga");
 	
-	m_gridTypes[GridType_Empty] = new Grid("Textures/TilingBrickTexture2.tga");
+	m_gridTypes[GridType_Empty] = new Grid("Textures/Player.tga");
 
 	for(int i = 0; i < NUM_GRID; ++i)
 	{

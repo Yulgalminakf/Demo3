@@ -529,7 +529,10 @@ unsigned int Graphics::LoadTexture(char* filename)
 	}
 
 	GeneralLib::CTga oTga;
-	oTga.Read(filename);
+	if(oTga.Read(filename) == false)
+	{
+		return -1;
+	}
 	unsigned int nFormat = GL_BGRA, nComponents = 4;
 	if (oTga.GetBytesPerPixel() == 3)
 	{

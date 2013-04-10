@@ -2,13 +2,14 @@
 #include "DefinedUtilities.h"
 #include "MathLibrary.h"
 #include "main.h"
+#include "Grid.h"
 
-#define NUM_GRID_WIDTH 10
-#define NUM_GRID_HEIGHT 10
-#define NUM_GRID NUM_GRID_HEIGHT * NUM_GRID_WIDTH
+#define NUM_GRID_WIDTH		10
+#define NUM_GRID_HEIGHT		10
+#define NUM_GRID			NUM_GRID_HEIGHT * NUM_GRID_WIDTH
 
-#define GRID_WIDTH 20
-#define GRID_HEIGHT 20
+#define GRID_WIDTH			40
+#define GRID_HEIGHT			40
 
 enum GridType
 {
@@ -26,7 +27,7 @@ class GridManager
 
 	unsigned int m_selectionIndex;
 	bool m_bSelected;
-	Vector4 m_gridTypeColors[GridType_Count];
+	Grid *m_gridTypes[GridType_Count];
 public:
 	GridManager(void);
 	~GridManager(void);

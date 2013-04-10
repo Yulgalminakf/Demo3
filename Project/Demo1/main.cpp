@@ -43,14 +43,8 @@ TwBar *TwkBar()
 }
 #endif // TWEAK_MENU
 
-CObjMesh g_mesh;
-
 Profiler *g_updateProfiler;
 Profiler *g_drawProfiler;
-
-unsigned int g_duckieTexHandle = 0;
-unsigned int g_shaderHandle = 0;
-unsigned int g_crossHairTexHandle, g_brickTexHandle;
 
 Vector3 ScreenToWorld(const Vector2 &pointOnScreen, const Vector3 cameraPos, const Matrix &viewMat, const float screenWidth, const float screenHeight)
 {
@@ -491,17 +485,14 @@ void Init()
 	#endif //TWEAK_MENU
 
 	Graphics *graphics = Graphics::Get();
-	g_brickTexHandle = graphics->LoadTexture("Textures/TilingBrickTexture.tga");
 	//g_crossHairTexHandle = graphics->LoadTexture("Textures/Corrshairs.tga");
 
 	//g_shaderHandle = graphics->LoadShaderProgram("Shaders\\texture_vs.glsl", "Shaders\\texture_ps.glsl");
-	g_shaderHandle = graphics->LoadShaderProgram("Shaders\\color_vs.glsl", "Shaders\\color_ps.glsl");
 	//g_shaderHandle = graphics->LoadShaderProgram("Shaders\\default_vs.glsl", "Shaders\\default_ps.glsl");
 	
 	g_oCameraPos = g_defaultCameraPos;
 	g_oLookAt = g_defaultLookAt;
 
-	g_mesh.LoadFromFile("Meshes/cube.obj");
 	//g_mesh.LoadFromFile("Meshes/bunny.obj");
 
 	#if TWEAK_MENU

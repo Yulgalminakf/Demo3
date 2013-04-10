@@ -9,8 +9,10 @@ GridManager::GridManager(void)
 	m_selectionIndex = 0;
 	m_bSelected = false;
 
-	m_gridTypeColors[GridType_Brick] = Vector4(1,0,0,1);
-	m_gridTypeColors[GridType_Empty] = Vector4(1,1,1,1);
+	memset(m_gridTypes, 0, sizeof(Grid*) * GridType_Count);
+	m_gridTypes[GridType_Brick] = new Grid("Textures/TilingBrickTexture.tga");
+	
+	m_gridTypes[GridType_Empty] = new Grid("Textures/TilingBrickTexture2.tga");
 
 	for(int i = 0; i < NUM_GRID; ++i)
 	{
@@ -22,6 +24,13 @@ GridManager::GridManager(void)
 
 GridManager::~GridManager(void)
 {
+	for(int i = 0; i < GridType_Count; ++i)
+	{
+		if(m_gridTypes[i])
+		{
+			delete m_gridTypes[i];
+		}
+	}
 }
 
 void GridManager::Update(float dt)
@@ -65,7 +74,7 @@ void GridManager::Draw()
 			GridType gridType = GetGrid(index);
 			if(gridType < GridType_Count)
 			{
-				Graphics::Get()->DrawRectWithColor(rect, 0, m_gridTypeColors[gridType]);
+				m_gridTypes[gridType]->Draw(rect);
 			}
 		}
 	}

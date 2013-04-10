@@ -719,6 +719,56 @@ void Graphics::DrawSquareWithTexture(Vector2 center, Vector2 size, int layer, un
 	DrawSquare_imp(center,size,layer,rotation);
 }
 
+void Graphics::DrawRect_imp(Rect rect, int layer, float rotation)
+{
+	Vector2 topLeft, topRight, bottomLeft, bottomRight;
+	
+	rect.TopLeft(&topLeft);
+	rect.TopRight(&topRight);
+	rect.BottomLeft(&bottomLeft);
+	rect.BottomRight(&bottomRight);
+
+	if(rotation != 0.0f)
+	{
+		Matrix rot = Matrix::CreateRotZ(rotation);
+
+		topLeft = rot.Transform(topLeft);
+		topRight = rot.Transform(topRight);
+		bottomLeft = rot.Transform(bottomLeft);
+		bottomRight = rot.Transform(bottomRight);
+	}
+
+	glBegin(GL_QUADS);
+	
+	glVertex3f(topLeft.x, topLeft.y, layer);
+	glTexCoord2f(0,0);
+	glVertex3f(bottomLeft.x, bottomLeft.y, layer);
+	glTexCoord2f(0,1);
+	glVertex3f(bottomRight.x, bottomRight.y, layer);
+	glTexCoord2f(1,1);
+	glVertex3f(topRight.x, topRight.y, layer);
+	glTexCoord2f(1,0);
+
+	glEnd();
+}
+
+void Graphics::DrawRectWithColor(Rect rect, int layer, Vector4 color)
+{
+	SetDefaultShaderProgram(eShader_Color);
+	glColor4f(color.x,color.y,color.z,color.w);
+	SetValue("color", color);
+
+	DrawRect_imp(rect, layer);
+}
+
+void Graphics::DrawRectWithTexture(Rect rect, int layer, unsigned int textureHandle)
+{
+	SetDefaultShaderProgram(eShader_Texture);
+	SetTexture(textureHandle);
+
+	DrawRect_imp(rect, layer);
+}
+
 /*
 void Graphics::DrawLine(Vector3 p1, Vector3 p2, Vector4 color)
 {

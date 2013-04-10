@@ -12,37 +12,26 @@
 #include "Tga.h"
 #include "Color.h"
 #include "Brain.h"
+#include "GridManager.h"
 
 Matrix g_meshMatrix;
 
 HANDLE g_consoleHandle;
 
 Vector3 g_oCameraPos;
-Vector3 g_defaultCameraPos = Vector3(0,0,-100);
+Vector3 g_defaultCameraPos = Vector3(g_screenWidth / 2.0f,-g_screenHeight / 2.0f,100);
+//Vector3 g_defaultCameraPos = Vector3(0,0,100);
 Vector3 g_oLookAt;
-Vector3 g_defaultLookAt = Vector3(0,0,0);
+Vector3 g_defaultLookAt = Vector3(g_screenWidth / 2.0f,-g_screenHeight / 2.0f,0);
+//Vector3 g_defaultLookAt = Vector3(0,0,0);
 Matrix g_viewMat;
 Matrix g_objectMat = Matrix::CreateIdentity();
 const Vector2 g_screenSize(g_screenWidth, g_screenHeight);
 
-#define PROJECTION_VIEW_MATRIX 1
+#define PROJECTION_VIEW_MATRIX 0
 #define ORTHOGRAPHIC_VIEW_MATRIX !PROJECTION_VIEW_MATRIX
 #define MOVEMENT 1
-
-//////////////////////////////////////////////////////////////////////////////////
-// Instancing Test
-#define NUM_OBJECTS 100000
-Matrix g_matrices[NUM_OBJECTS];
-Vector3 g_colors[NUM_OBJECTS];
-unsigned int g_instanceTestShaderHandle = 0;
-Matrix g_globalMatrix,g_individualMatrix;
-Vector3 g_rot;
-Vector3 g_rotRate(100,50,25);
-float g_size;
-float g_maxSize = 0.5f,g_minSize = 2.0f;
-float g_totalTimePassed = 0;
-float g_sizeRate = 2.0f;
-//////////////////////////////////////////////////////////////////////////////////
+#define TRACK_FPS 0
 
 double g_deltaTime = 0.0;
 
@@ -258,6 +247,7 @@ unsigned int g_deltaTimeBufferIndex = 0;
 const unsigned int g_deltaTimeBufferSize = 20;
 float g_avgFPSBuffer[g_deltaTimeBufferSize];
 
+#if TRACK_FPS
 float GetAvgDeltaTime()
 {
 	float dt = 0.0f;
@@ -276,17 +266,16 @@ void AddToDeltaTimeBuffer(float dt)
 
 float g_timeToPrintFPS = 1.0f;
 float g_timer = 0.0f;
+#endif //TRACK_FPS
 //----------------------------------------------------------------------------------------------
 void Update(double fDelta)
 {
 	Input *input = Input::Get();
 
+	GridManager::Get()->Update((float)fDelta);
+
+#if TRACK_FPS
 	AddToDeltaTimeBuffer(fDelta);
-
-	#if TWK_PROFILER
-		TwRefreshBar(TwkBarProfiler());
-	#endif //TWK_PROFILER
-
 	g_timer += fDelta;
 	if(g_timer >= g_timeToPrintFPS)
 	{
@@ -295,18 +284,12 @@ void Update(double fDelta)
 
 		Print("\nFrames per second: %f\n", 1.0f / avgDt);
 	}
+#endif //TRACK_FPS
 
-	g_rot.x += g_rotRate.x * fDelta;
-	g_rot.y += g_rotRate.y * fDelta;
-	g_rot.z += g_rotRate.z * fDelta;
+	#if TWK_PROFILER
+		TwRefreshBar(TwkBarProfiler());
+	#endif //TWK_PROFILER
 
-	g_totalTimePassed += fDelta * g_sizeRate;
-	float pct = (sinf(g_totalTimePassed) + 1) / 2.0f;
-	g_size = pct * (g_maxSize - g_minSize) + g_minSize;
-
-	g_globalMatrix = Matrix::CreateRotXYZ(g_rot.x, g_rot.y, g_rot.z) * Matrix::CreateScaleUniform(g_size);
-	float otherSize = (1.0f - pct) * (g_maxSize - g_minSize) + g_minSize;
-	g_individualMatrix = Matrix::CreateRotXYZ(-g_rot.y, g_rot.x, g_rot.x) * Matrix::CreateScaleUniform(otherSize);
 
 #if MOVEMENT
 #pragma region Movement
@@ -440,79 +423,7 @@ void RenderWorld()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(oView.GetBuffer());
 
-	//Graphics::Get()->SetTexture(g_duckieTexHandle);
-	graphics->SetShaderProgram(g_instanceTestShaderHandle);
-
-	unsigned int matricesHandle = glGetAttribLocation(g_instanceTestShaderHandle, "matrix");	
-	error = glGetError();
-    for (unsigned int i = 0; i < 4 ; i++) 
-	{
-        glEnableVertexAttribArray(matricesHandle + i);
-		error = glGetError();
-		char* ptr = ((char*)g_matrices) + (i * sizeof(float) * 4);
-        glVertexAttribPointer(matricesHandle + i, 4, GL_FLOAT, GL_FALSE, sizeof(Matrix), ptr);
-		error = glGetError();
-		glVertexAttribDivisorARB(matricesHandle + i, 1);
-		error = glGetError();
-        //glVertexAttribDivisor(matricesHandle + i, 1);
-    }
-
-	unsigned int colorsHandle = glGetAttribLocation(g_instanceTestShaderHandle, "color");
-	glEnableVertexAttribArray(colorsHandle);
-	glVertexAttribPointer(colorsHandle, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), g_colors);
-	glVertexAttribDivisorARB(colorsHandle, 1);
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	//unsigned int colorHandle = glGetUniformLocation(g_instanceTestShaderHandle, "color");
-	//glUniform3f(colorHandle, 1,1,1);
-
-	graphics->SetValue("globalMatrix", g_globalMatrix);
-	graphics->SetValue("individualMatrix", g_individualMatrix);
-
-	glVertexPointer(3, GL_FLOAT, sizeof(Vector3), g_mesh.GetVertexPointer());
-	glDrawElementsInstanced(GL_TRIANGLES, g_mesh.GetIndicesSize(), GL_UNSIGNED_INT, g_mesh.GetIndicesPointer(), NUM_OBJECTS);
-
-	/*
-	graphics->SetValue("color", Vector3(1,0,1));
-	graphics->SetValue("alpha", 0.5);
-	glLoadMatrixf( (oView * g_meshMatrix).GetBuffer() );
-	g_mesh.Render(true, GL_LINE);
-	*/
-
-	//graphics->DrawSquareWithTexture(Vector2(0,0),Vector2(10,10),0,g_brickTexHandle, g_rot);
-	//graphics->DrawSquareWithColor(Vector2(0,0),Vector2(10,10),0,Vector4(1,1,1,1), 0);
-
-	//g_boid.Draw();
-	/*
-	Vector2 mousePos = Input::Get()->GetMousePos();
-	mousePos = g_screenSize - mousePos;
-	//mousePos -= g_screenSize;
-	unsigned int x,y;
-	Flocking::ConvertPosToXY(mousePos,x,y);
-	Flocking *flocking = Flocking::Get();
-
-	int width = 3, height = 3;
-	for(int i = x - width, iMax = x + width; i <= iMax; ++i)
-	{
-		for(int j = y - height, jMax = y + height; j <= jMax; ++j)
-		{
-			int wrappedI = GeneralMath::WrapInt(i, 0, Flocking::k_numBlocksWidth - 1);
-			int wrappedJ = GeneralMath::WrapInt(j, 0, Flocking::k_numBlocksHeight - 1);
-			unsigned int index;
-
-			Flocking::ConvertXYToIndex(wrappedI,wrappedJ,index);
-			if(wrappedI == x && wrappedJ == y)
-			{
-				flocking->DrawBlock(index, Vector4(0.75f,0.75f,0.75f,1.0f));
-			}
-			else
-			{
-				flocking->DrawBlock(index, Vector4(0.0f,0.5f,0.0f,1.0f));
-			}
-		}
-	}*/
+	GridManager::Get()->Draw();
 
 	RenderGUI();
 	//g_angle += 0.01f;
@@ -553,61 +464,11 @@ void Init()
 	//glUniform1fv(
 		// main TweakBar initialization
 
-	for(int i = 0; i < NUM_OBJECTS; ++i)
-	{
-		float x,y,z;
-		const static unsigned int posStep = 1;
-		const static unsigned int maxPos = 1000 / posStep;
-		x = rand() % (maxPos);
-		y = rand() % (maxPos);
-		z = rand() % (maxPos);
-		x -= (maxPos) / 2.0f;
-		y -= (maxPos) / 2.0f;
-		z -= (maxPos) / 2.0f;
-		x *= posStep;
-		y *= posStep;
-		z *= posStep;
-		const static float minSize = 0.05f;
-		const static float maxSize = 1.0f;
-		float size = (minSize == maxSize) ? minSize : (Utility::RandomDouble(false) * (maxSize - minSize)) + minSize;
-		float xRot = 0.0f, yRot = 0.0f, zRot = 0.0f;
-		xRot = rand() % 360;
-		yRot = rand() % 360;
-		zRot = rand() % 360;
-		float xRot2 = 0.0f, yRot2 = 0.0f, zRot2 = 0.0f;
-		xRot2 = rand() % 360;
-		yRot2 = rand() % 360;
-		zRot2 = rand() % 360;
-		float randomLength = (rand() % maxPos - (maxPos / 2.0f)) * posStep;
-		g_matrices[i] = Matrix::CreateRotXYZ(xRot2,yRot2,zRot2) * Matrix::CreateTranslation(Vector3(randomLength, 0.0f, 0.0f)) * Matrix::CreateScaleUniform(size) * Matrix::CreateRotXYZ(xRot, yRot, zRot);
-
-		g_colors[i] = Color::GetColor((Color::CommonColor)(rand() % Color::CommonColor::Count));
-		/*
-		for(int j = 0; j < 3; ++j)
-		{
-			for(int k = 0; k < 3; ++k)
-			{
-				g_matrices[i].Set(j,k,Utility::RandomDouble(true) * 1.0f);
-			}
-		}*/
-	}
-
-	g_instanceTestShaderHandle = Graphics::Get()->LoadShaderProgram("Shaders/instance_test_vs.glsl", "Shaders/instance_test_ps.glsl");
 	#if TWEAK_MENU
 		TwInit(TW_OPENGL, NULL);
 		TwWindowSize(g_screenWidth, g_screenHeight);
 		myBar = TwNewBar("Tweak");
 	#endif // TWEAK_MENU
-
-#if TWEAK_MENU
-	//	TwAddVarRW(TwkBar(), "Draw Neighbors", TW_TYPE_BOOL8, &boid->m_bDrawNeighbors, "");
-		TwAddVarRW(TwkBar(), "Rot Rate X", TW_TYPE_FLOAT, &g_rotRate.x, "min=0 precision=3");
-		TwAddVarRW(TwkBar(), "Rot Rate Y", TW_TYPE_FLOAT, &g_rotRate.y, "min=0 precision=3");
-		TwAddVarRW(TwkBar(), "Rot Rate Z", TW_TYPE_FLOAT, &g_rotRate.z, "min=0 precision=3");
-		TwAddVarRW(TwkBar(), "Max Size", TW_TYPE_FLOAT, &g_maxSize, "min=0 precision=3");
-		TwAddVarRW(TwkBar(), "Min Size", TW_TYPE_FLOAT, &g_minSize, "min=0 precision=3");
-		TwAddVarRW(TwkBar(), "Size Rate", TW_TYPE_FLOAT, &g_sizeRate, "min=0 precision=3");
-#endif
 
 	#if TWK_PROFILER
 		InitTwkBarProfiler();
@@ -650,6 +511,8 @@ void Init()
 	//g_mesh.LoadFromFile("suzanne.obj");
 	//g_mesh.LoadFromFile("bunny.obj");
 
+	GridManager::InitStaticInstance();
+
 	for(int i = 0; i < g_deltaTimeBufferSize; ++i)
 	{
 		g_avgFPSBuffer[i] = 0.0f;
@@ -664,6 +527,8 @@ void CleanUp()
 
 	delete Graphics::Get();
 	delete Input::Get();
+
+	GridManager::DeleteStaticInstance();
 }
 
 int APIENTRY WinMain(HINSTANCE hInstance,

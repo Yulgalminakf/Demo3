@@ -102,6 +102,9 @@
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Graphics.cpp" />
+    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GridManager.cpp" />
+    <ClCompile Include="JobManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathLibrary.cpp" />
     <ClCompile Include="ObjMesh.cpp" />
@@ -117,6 +120,9 @@
     <ClInclude Include="DefinedUtilities.h" />
     <ClInclude Include="glew.h" />
     <ClInclude Include="Graphics.h" />
+    <ClInclude Include="Grid.h" />
+    <ClInclude Include="GridManager.h" />
+    <ClInclude Include="JobManager.h" />
     <ClInclude Include="LightSource.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="MathLibrary.h" />

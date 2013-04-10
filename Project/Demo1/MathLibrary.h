@@ -236,6 +236,7 @@ public:
 	static Matrix CreateScaleUniform(const t_float &xyz);
 	static Matrix CreateProjection(t_float fFieldOfViewY, t_float fAspectRatio, t_float fNearZ, t_float fFarZ);
 	static Matrix CreateViewMatrix(const Vector3 &oCameraPos, const Vector3 &oLookAt);
+	static Matrix CreateViewMatrix(const Vector3 &oCameraPos, const Vector3 &oLookAt, const Vector3 &upVector);
 
 	Matrix operator*(const Matrix &mat) const;
 	t_float &operator()(const unsigned char i, const unsigned char j);

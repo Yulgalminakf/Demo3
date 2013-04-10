@@ -122,6 +122,7 @@ private:
 	bool m_bSpotLight3;
 	bool m_bSpotLight4;
 
+	void DrawRect_imp(Rect rect, int layer, float rotation = 0);
 	void DrawSquare_imp(Vector2 center, Vector2 size, int layer, float rotation = 0);
 
 public:
@@ -169,6 +170,9 @@ public:
 	void DrawSquareWithColor(Vector2 center, Vector2 size, int layer, Vector4 color, float rotation);
 	void DrawSquareWithTexture(Vector2 center, Vector2 size, int layer, unsigned int textureHandle);
 	void DrawSquareWithTexture(Vector2 center, Vector2 size, int layer, unsigned int textureHandle, float rotation);
+	
+	void DrawRectWithColor(Rect rect, int layer, Vector4 color);
+	void DrawRectWithTexture(Rect rect, int layer, unsigned int textureHandle);
 
 	//void DrawLine(Vector3 p1, Vector3 p2, Vector4 color);
 

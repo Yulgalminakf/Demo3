@@ -1152,5 +1152,30 @@ Matrix Matrix::CreateViewMatrix(const Vector3 &oCameraPos, const Vector3 &oLookA
 
 	return oView;
 }
+
+Matrix Matrix::CreateViewMatrix(const Vector3 &oCameraPos, const Vector3 &oLookAt, const Vector3 &upVector)
+{
+	Matrix oTranslate, oRotate, oView;
+
+	Vector3 oViewZ = oLookAt - oCameraPos; 
+	oViewZ.Normalize();
+	Vector3 oViewX = Vector3::Cross(oViewZ, upVector); 
+	oViewX.Normalize();
+	Vector3 oViewY = Vector3::Cross(oViewX, oViewZ);
+
+	oRotate.BuildIdentity();
+	//oRotate.Set(0, 0, oViewX.GetX()); oRotate.Set(0, 1, oViewX.GetY()); oRotate.Set(0, 2, oViewX.GetZ());
+	//oRotate.Set(1, 0, oViewY.GetX()); oRotate.Set(1, 1, oViewY.GetY()); oRotate.Set(1, 2, oViewY.GetZ());
+	//oRotate.Set(2, 0, -oViewZ.GetX()); oRotate.Set(2, 1, -oViewZ.GetY()); oRotate.Set(2, 2, -oViewZ.GetZ());
+	oRotate.SetRight(oViewX);
+	oRotate.SetUp(oViewY);
+	oRotate.SetForward(oViewZ);
+	oTranslate.BuildTranslation(-oCameraPos.x, -oCameraPos.y, -oCameraPos.z);
+
+	//Matrix::Multiply(oView, oRotate, oTranslate);
+	oView = oRotate * oTranslate;
+
+	return oView;
+}
 ////////////////////////////////////////////////////////////////////////////////////////////
 #pragma endregion

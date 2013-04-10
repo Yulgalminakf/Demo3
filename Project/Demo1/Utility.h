@@ -282,4 +282,48 @@ public:
 #pragma endregion
 ////////////////////////////////////////////////
 
+template <class T>
+class Queue
+{
+	const static unsigned int k_maxQueueSize = 256;
+	T m_queue[k_maxQueueSize];
+	unsigned char m_head, m_tail;
+	unsigned int m_size;
+
+public:
+
+	Queue()
+	{
+		m_head = m_tail = 0;
+		m_size = 0;
+	}
+	
+	void Add(T item)
+	{
+		if(m_size == k_maxQueueSize)
+			return; 
+		m_queue[m_tail] = item;
+		++m_tail;
+		m_size++;
+	}
+	T Next()
+	{
+		//assert(m_size != 0);
+		if(m_size == 0)
+		{
+			return m_queue[0];
+		}
+		m_size--;
+		return m_queue[m_head++];
+	}
+	unsigned int GetNumQueued()
+	{
+		return m_size;
+	}
+	unsigned int GetMaxQueueSize()
+	{
+		return k_maxQueueSize;
+	}
+};
+
 #endif

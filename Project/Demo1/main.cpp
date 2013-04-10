@@ -13,6 +13,8 @@
 #include "Color.h"
 #include "Brain.h"
 #include "GridManager.h"
+#include "Utility.h"
+#include "JobManager.h"
 
 Matrix g_meshMatrix;
 
@@ -30,7 +32,7 @@ const Vector2 g_screenSize(g_screenWidth, g_screenHeight);
 
 #define PROJECTION_VIEW_MATRIX 0
 #define ORTHOGRAPHIC_VIEW_MATRIX !PROJECTION_VIEW_MATRIX
-#define MOVEMENT 1
+#define MOVEMENT 0
 #define TRACK_FPS 0
 
 double g_deltaTime = 0.0;
@@ -241,6 +243,10 @@ unsigned int g_deltaTimeBufferIndex = 0;
 const unsigned int g_deltaTimeBufferSize = 20;
 float g_avgFPSBuffer[g_deltaTimeBufferSize];
 
+bool g_selected = false;
+unsigned int g_mouseIndexStart = 0;
+
+
 #if TRACK_FPS
 float GetAvgDeltaTime()
 {
@@ -267,6 +273,22 @@ void Update(double fDelta)
 	Input *input = Input::Get();
 
 	GridManager::Get()->Update((float)fDelta);
+	JobManager::Get()->Update((float)fDelta);
+
+	if(input->IsKeyDown(BUTTON_MOUSE_LEFT) && g_selected == false)
+	{
+		g_selected = true;
+		GridManager::ConvertPosToIndex(input->GetMousePos(), g_mouseIndexStart);
+	}
+	else if(input->IsKeyDown(BUTTON_MOUSE_LEFT) == false && g_selected == true)
+	{
+		g_selected = false;
+		JobManager *jm = JobManager::Get();
+		JobInfo_MoveBlock *info = new JobInfo_MoveBlock();
+		GridManager::ConvertIndexToXY(g_mouseIndexStart, info->m_from.x, info->m_from.y);
+		GridManager::ConvertPosToXY(input->GetMousePos(), info->m_to.x, info->m_to.y);
+		jm->AddJob(info, NULL);
+	}
 
 #if TRACK_FPS
 	AddToDeltaTimeBuffer(fDelta);
@@ -503,6 +525,7 @@ void Init()
 	//g_mesh.LoadFromFile("bunny.obj");
 
 	GridManager::InitStaticInstance();
+	JobManager::InitStaticInstance();
 
 	for(int i = 0; i < g_deltaTimeBufferSize; ++i)
 	{
@@ -520,6 +543,7 @@ void CleanUp()
 	delete Input::Get();
 
 	GridManager::DeleteStaticInstance();
+	JobManager::DeleteStaticInstance();
 }
 
 int APIENTRY WinMain(HINSTANCE hInstance,

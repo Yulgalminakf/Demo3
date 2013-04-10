@@ -6,9 +6,6 @@ GridManager *GridManager::s_theGridManager = 0;
 
 GridManager::GridManager(void)
 {
-	m_selectionIndex = 0;
-	m_bSelected = false;
-
 	memset(m_gridTypes, 0, sizeof(Grid*) * GridType_Count);
 	Graphics* g = Graphics::Get();
 
@@ -21,7 +18,21 @@ GridManager::GridManager(void)
 		SetGrid(i, GridType_Empty);
 	}
 
-	SetGrid(NUM_GRID_WIDTH / 2.0f, NUM_GRID_HEIGHT / 2.0f, GridType_Brick);
+
+	unsigned int i = 0;
+	unsigned int max = 10;
+	while(i < max)
+	{
+		unsigned int x,y;
+		x = rand() % NUM_GRID_WIDTH;
+		y = rand() % NUM_GRID_HEIGHT;
+
+		if(GetGrid(x,y) != GridType_Brick)
+		{
+			SetGrid(x,y, GridType_Brick);
+			++i;
+		}
+	}
 }
 
 GridManager::~GridManager(void)
@@ -37,25 +48,12 @@ GridManager::~GridManager(void)
 
 void GridManager::Update(float dt)
 {
-	Input *input = Input::Get();
-	if(m_bSelected == false &&		input->IsKeyDown(BUTTON_MOUSE_LEFT) == true)
+	for(int i = 0; i < NUM_GRID; ++i)
 	{
-		m_bSelected = true;
-		ConvertPosToIndex(input->GetMousePos(), m_selectionIndex);
-	}
-	else if(m_bSelected == true &&	input->IsKeyDown(BUTTON_MOUSE_LEFT) == false)
-	{
-		m_bSelected = false;
-		unsigned int index;
-		ConvertPosToIndex(input->GetMousePos(), index);
-		Print("Attempting to switch %i and %i\n", m_selectionIndex, index);
-
-		if(index < NUM_GRID && m_selectionIndex < NUM_GRID)
+		GridType type = GetGrid(i);
+		if(type != GridType_Count)
 		{
-			GridType type = GetGrid(index);
-			SetGrid(index, GetGrid(m_selectionIndex));
-			SetGrid(m_selectionIndex, type);
-			Print("Switched!\n");
+			m_gridTypes[type]->Update(dt, i);
 		}
 	}
 }

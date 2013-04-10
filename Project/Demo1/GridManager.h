@@ -11,12 +11,9 @@
 #define GRID_WIDTH			40
 #define GRID_HEIGHT			40
 
-enum GridType
+struct GridCoords
 {
-	GridType_Brick,
-	GridType_Empty,
-
-	GridType_Count
+	unsigned int x,y;
 };
 
 class GridManager
@@ -24,10 +21,8 @@ class GridManager
 	static GridManager *s_theGridManager;
 
 	GridType m_grid[NUM_GRID_WIDTH * NUM_GRID_HEIGHT];
-
-	unsigned int m_selectionIndex;
-	bool m_bSelected;
 	Grid *m_gridTypes[GridType_Count];
+
 public:
 	GridManager(void);
 	~GridManager(void);
@@ -47,11 +42,11 @@ public:
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Index/xy converters
-	void ConvertXYToIndex(const unsigned int x, const unsigned int y, unsigned int &indexOut)			{ indexOut = y * NUM_GRID_WIDTH + x; }
-	void ConvertIndexToXY(const unsigned int index, unsigned int &xOut, unsigned int &yOut)				{ yOut = index % NUM_GRID_WIDTH; xOut = index / NUM_GRID_WIDTH; }
-
-	void ConvertPosToXY(const Vector2 &screenPos, unsigned int &xOut, unsigned int &yOut)					{ xOut = screenPos.x / GRID_WIDTH; yOut = screenPos.y / GRID_HEIGHT; }
-	void ConvertPosToIndex(const Vector2 &screenPos, unsigned int &indexOut)								{ unsigned int x,y; ConvertPosToXY(screenPos,x,y); ConvertXYToIndex(x,y,indexOut); }
-	void ConvertMousePos(const Vector2 &mousePos, Vector2 &mousePosOut)										{ mousePosOut = g_screenSize - mousePos; }
+	static void ConvertXYToIndex(const unsigned int x, const unsigned int y, unsigned int &indexOut)			{ indexOut = y * NUM_GRID_WIDTH + x; }
+	static void ConvertIndexToXY(const unsigned int index, unsigned int &xOut, unsigned int &yOut)				{ yOut = index / NUM_GRID_WIDTH; xOut = index % NUM_GRID_WIDTH; }
+	
+	static void ConvertPosToXY(const Vector2 &screenPos, unsigned int &xOut, unsigned int &yOut)				{ xOut = screenPos.x / GRID_WIDTH; yOut = screenPos.y / GRID_HEIGHT; }
+	static void ConvertPosToIndex(const Vector2 &screenPos, unsigned int &indexOut)								{ unsigned int x,y; ConvertPosToXY(screenPos,x,y); ConvertXYToIndex(x,y,indexOut); }
+	static void ConvertMousePos(const Vector2 &mousePos, Vector2 &mousePosOut)									{ mousePosOut = g_screenSize - mousePos; }
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 };

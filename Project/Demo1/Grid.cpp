@@ -11,7 +11,7 @@ Grid::~Grid(void)
 {
 }
 
-void Grid::Update(float dt)
+void Grid::Update(float dt, unsigned int index)
 {
 }
 

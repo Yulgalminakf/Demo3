@@ -27,7 +27,8 @@ public:
 	GETSET(JobInfo*, m_info, JobInfo);
 	GETSET(unsigned int, m_priority, Priority);
 
-	virtual bool IsJobPossible() { return true; }
+	virtual bool IsJobPossible()	{ return true; }
+	virtual void DebugDraw() = 0;
 };
 
 struct JobInfo_MoveBlock : public JobInfo
@@ -41,4 +42,5 @@ public:
 	Job_MoveBlock();
 	~Job_MoveBlock();
 	virtual bool IsJobPossible();
+	virtual void DebugDraw();
 };

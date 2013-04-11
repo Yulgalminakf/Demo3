@@ -680,7 +680,8 @@ void Graphics::DrawSquare_imp(Vector2 center, Vector2 size, int layer, float rot
 	}
 
 	glBegin(GL_QUADS);
-	
+	unsigned int error = glGetError();
+
 	glVertex3f(topLeft.x, topLeft.y, layer);
 	glTexCoord2f(0,0);
 	glVertex3f(bottomLeft.x, bottomLeft.y, layer);
@@ -695,6 +696,7 @@ void Graphics::DrawSquare_imp(Vector2 center, Vector2 size, int layer, float rot
 
 void Graphics::DrawSquareWithColor(Vector2 center, Vector2 size, int layer, Vector4 color)
 {
+	SetDefaultShaderProgram(eShader_Color);
 	glColor4f(color.x,color.y,color.z,color.w);
 	SetValue("color", color);
 
@@ -703,6 +705,7 @@ void Graphics::DrawSquareWithColor(Vector2 center, Vector2 size, int layer, Vect
 
 void Graphics::DrawSquareWithColor(Vector2 center, Vector2 size, int layer, Vector4 color, float rotation)
 {
+	SetDefaultShaderProgram(eShader_Color);
 	glColor3f(color.x,color.y,color.z);
 	SetValue("color", color.ToVector3());
 	SetValue("alpha", color.w);
@@ -712,12 +715,14 @@ void Graphics::DrawSquareWithColor(Vector2 center, Vector2 size, int layer, Vect
 
 void Graphics::DrawSquareWithTexture(Vector2 center, Vector2 size, int layer, unsigned int textureHandle)
 {
+	SetDefaultShaderProgram(eShader_Texture);
 	SetTexture(textureHandle);
 	DrawSquare_imp(center,size,layer);
 }
 
 void Graphics::DrawSquareWithTexture(Vector2 center, Vector2 size, int layer, unsigned int textureHandle, float rotation)
 {
+	SetDefaultShaderProgram(eShader_Texture);
 	SetTexture(textureHandle);
 	DrawSquare_imp(center,size,layer,rotation);
 }

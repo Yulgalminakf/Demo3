@@ -32,7 +32,7 @@ const Vector2 g_screenSize(g_screenWidth, g_screenHeight);
 
 #define PROJECTION_VIEW_MATRIX 0
 #define ORTHOGRAPHIC_VIEW_MATRIX !PROJECTION_VIEW_MATRIX
-#define MOVEMENT 0
+#define MOVEMENT 1
 #define TRACK_FPS 0
 
 double g_deltaTime = 0.0;
@@ -440,6 +440,7 @@ void RenderWorld()
 	glLoadMatrixf(oView.GetBuffer());
 
 	GridManager::Get()->Draw();
+	JobManager::Get()->DebugDraw();
 
 	RenderGUI();
 	//g_angle += 0.01f;

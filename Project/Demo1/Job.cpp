@@ -1,5 +1,6 @@
 #include "Job.h"
 #include "GridManager.h"
+#include "Graphics.h"
 
 Job::Job(void)
 {
@@ -43,4 +44,23 @@ bool Job_MoveBlock::IsJobPossible()
 	}
 
 	return true;
+}
+
+void Job_MoveBlock::DebugDraw()
+{
+	const static int layer = 1;
+	JobInfo_MoveBlock *info = (JobInfo_MoveBlock*)m_info;
+	Graphics *g = Graphics::Get();
+	Vector2 fromCenter = GridManager::GetGridCenter(info->m_from.x, info->m_from.y);
+	Vector2 toCenter = GridManager::GetGridCenter(info->m_to.x, info->m_to.y);
+	Vector2 size(10,10);
+
+	g->DrawSquareWithColor(fromCenter, size, layer, Vector4(1,0,0.5f,1));
+	g->DrawSquareWithColor(toCenter, size, layer, Vector4(0,1,0.5f,1));
+
+	glBegin(GL_LINES);
+	glColor3f(0.5f,0.5f,0);
+	glVertex3f(fromCenter.x, fromCenter.y, layer);
+	glVertex3f(toCenter.x, toCenter.y, layer);
+	glEnd();
 }

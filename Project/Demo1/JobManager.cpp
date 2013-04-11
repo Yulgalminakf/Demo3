@@ -4,12 +4,14 @@
 JobManager *JobManager::s_theJobManager = 0;
 
 bool g_doJobs = false;
+bool g_debugDraw = false;
 
 JobManager::JobManager(void)
 {
 #if TWEAK_MENU
 	//	TwAddVarRW(TwkBar(), "Draw Neighbors", TW_TYPE_BOOL8, &boid->m_bDrawNeighbors, "");
 	TwAddVarRW(TwkBar(), "Do Jobs", TW_TYPE_BOOL8, &g_doJobs, "");
+	TwAddVarRW(TwkBar(), "Debug Draw", TW_TYPE_BOOL8, &g_debugDraw, "");
 #endif //TWEAK_MENU
 }
 
@@ -40,6 +42,21 @@ void JobManager::Update(float dt)
 		}
 
 		delete job;
+	}
+}
+
+void JobManager::DebugDraw()
+{
+	if(g_debugDraw == false)
+	{
+		return;
+	}
+
+	for(int i = 0, iMax = m_jobQueue.GetNumQueued(); i < iMax; ++i)
+	{
+		Job *job = m_jobQueue.Next();
+		job->DebugDraw();
+		m_jobQueue.Add(job);
 	}
 }
 

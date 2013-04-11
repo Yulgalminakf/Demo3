@@ -15,6 +15,7 @@ public:
 	// FindBestWorker
 	STATIC_INSTANCE(JobManager, s_theJobManager);
 	void Update(float dt);
+	void DebugDraw();
 
 	bool AddJob(JobInfo *info, void *pData);
 };

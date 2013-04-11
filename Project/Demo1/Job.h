@@ -15,9 +15,13 @@ struct JobInfo
 
 enum Priority
 {
+	Highest,
 	High,
+	MedHigh,
 	Medium,
-	Low
+	MedLow,
+	Low,
+	Lowest
 };
 
 #define MAX_WORKER_PER_JOB 10

@@ -112,6 +112,7 @@
     <ClCompile Include="State.cpp" />
     <ClCompile Include="Tga.cpp" />
     <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="Worker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Array.h" />
@@ -133,6 +134,7 @@
     <ClInclude Include="State.h" />
     <ClInclude Include="Tga.h" />
     <ClInclude Include="Utility.h" />
+    <ClInclude Include="Worker.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\boid_ps.glsl" />

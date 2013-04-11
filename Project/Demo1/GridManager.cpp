@@ -11,7 +11,7 @@ GridManager::GridManager(void)
 
 	m_gridTypes[GridType_Brick] = new Grid("Textures/TilingBrickTexture.tga");
 	
-	m_gridTypes[GridType_Empty] = new Grid("Textures/Player.tga");
+	m_gridTypes[GridType_Empty] = new Grid("Textures/Grass.tga");
 
 	for(int i = 0; i < NUM_GRID; ++i)
 	{

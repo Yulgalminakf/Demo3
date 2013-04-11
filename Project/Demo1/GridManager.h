@@ -4,12 +4,12 @@
 #include "main.h"
 #include "Grid.h"
 
-#define NUM_GRID_WIDTH		10
-#define NUM_GRID_HEIGHT		10
+#define NUM_GRID_WIDTH		15
+#define NUM_GRID_HEIGHT		15
 #define NUM_GRID			NUM_GRID_HEIGHT * NUM_GRID_WIDTH
 
-#define GRID_WIDTH			40
-#define GRID_HEIGHT			40
+#define GRID_WIDTH			50
+#define GRID_HEIGHT			50
 
 struct GridCoords
 {

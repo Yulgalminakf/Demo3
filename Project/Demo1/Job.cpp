@@ -5,7 +5,7 @@
 Job::Job(void)
 {
 	m_info = 0;
-	m_priority = Low;
+	m_priority = Lowest;
 	m_index = -1;
 	m_frameStamp = 0;
 	m_numWorkers = m_numWorkersRecommended = 1;

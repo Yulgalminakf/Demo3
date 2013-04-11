@@ -453,7 +453,6 @@ void RenderWorld()
 		g_drawProfiler->Stop();
 	#endif //PROFILER
 	
-
 #if TWEAK_MENU
 	TwDraw();
 #endif // TWEAK_MENU

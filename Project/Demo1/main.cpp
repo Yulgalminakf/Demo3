@@ -32,10 +32,11 @@ const Vector2 g_screenSize(g_screenWidth, g_screenHeight);
 
 #define PROJECTION_VIEW_MATRIX 0
 #define ORTHOGRAPHIC_VIEW_MATRIX !PROJECTION_VIEW_MATRIX
-#define MOVEMENT 1
+#define MOVEMENT 0
 #define TRACK_FPS 0
 
 double g_deltaTime = 0.0;
+unsigned int g_frameNumber = 0;
 
 #if TWEAK_MENU
 TwBar *myBar;
@@ -270,6 +271,7 @@ float g_timer = 0.0f;
 //----------------------------------------------------------------------------------------------
 void Update(double fDelta)
 {
+	g_frameNumber++;
 	Input *input = Input::Get();
 
 	GridManager::Get()->Update((float)fDelta);
@@ -287,7 +289,10 @@ void Update(double fDelta)
 		JobInfo_MoveBlock *info = new JobInfo_MoveBlock();
 		GridManager::ConvertIndexToXY(g_mouseIndexStart, info->m_from.x, info->m_from.y);
 		GridManager::ConvertPosToXY(input->GetMousePos(), info->m_to.x, info->m_to.y);
-		jm->AddJob(info, NULL);
+		if(!jm->AddJob(info, NULL))
+		{
+			delete info;
+		}
 	}
 
 #if TRACK_FPS
@@ -440,7 +445,7 @@ void RenderWorld()
 	glLoadMatrixf(oView.GetBuffer());
 
 	GridManager::Get()->Draw();
-	JobManager::Get()->DebugDraw();
+	JobManager::Get()->Draw();
 
 	RenderGUI();
 	//g_angle += 0.01f;

@@ -25,6 +25,7 @@ extern Matrix g_viewMat;
 extern Matrix g_objectMat;
 
 extern double g_deltaTime;
+extern unsigned int g_frameNumber;
 
 #define TWEAK_MENU 1
 

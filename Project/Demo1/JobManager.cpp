@@ -8,10 +8,12 @@ bool g_debugDraw = false;
 
 JobManager::JobManager(void)
 {
+	m_numJobs = 0;
 #if TWEAK_MENU
 	//	TwAddVarRW(TwkBar(), "Draw Neighbors", TW_TYPE_BOOL8, &boid->m_bDrawNeighbors, "");
 	TwAddVarRW(TwkBar(), "Do Jobs", TW_TYPE_BOOL8, &g_doJobs, "");
 	TwAddVarRW(TwkBar(), "Debug Draw", TW_TYPE_BOOL8, &g_debugDraw, "");
+	TwAddVarRO(TwkBar(), "Number of Jobs Queued", TW_TYPE_INT32, &m_numJobs, "");
 #endif //TWEAK_MENU
 }
 
@@ -21,9 +23,9 @@ JobManager::~JobManager(void)
 
 void JobManager::Update(float dt)
 {
-	if(m_jobQueue.GetNumQueued() > 0 && g_doJobs)
+	if(m_numJobs && g_doJobs)
 	{
-		Job *job = m_jobQueue.Next();
+		Job *job = GetHighestPriorityJob();
 		JobInfo *info = job->GetJobInfo();
 		switch(info->m_jobType)
 		{
@@ -41,23 +43,55 @@ void JobManager::Update(float dt)
 			break;
 		}
 
+		RemoveJob(job);
+
 		delete job;
+	}
+}
+
+void JobManager::Draw()
+{
+	for(int i = 0; i < m_numJobs; ++i)
+	{
+		Job *job = m_jobs[i];
+		job->Draw();
+	}
+
+	if(g_debugDraw)
+	{
+		DebugDraw();
 	}
 }
 
 void JobManager::DebugDraw()
 {
-	if(g_debugDraw == false)
+	for(int i = 0, iMax = m_numJobs; i < iMax; ++i)
 	{
-		return;
+		Job *job = m_jobs[i];
+		job->DebugDraw();
+	}
+}
+
+void JobManager::RemoveJob(Job *job)
+{
+	unsigned int index = job->GetIndex();
+	assert(m_jobs[index] == job);
+	m_jobs[index] = m_jobs[--m_numJobs];
+	m_jobs[index]->SetIndex(index);
+}
+
+bool JobManager::AddJob(Job *job)
+{
+	if(m_numJobs < MAX_JOBS)
+	{
+		m_jobs[m_numJobs] = job;
+		job->SetIndex(m_numJobs);
+		job->SetFrameStamp(g_frameNumber);
+		m_numJobs++;
+		return true;
 	}
 
-	for(int i = 0, iMax = m_jobQueue.GetNumQueued(); i < iMax; ++i)
-	{
-		Job *job = m_jobQueue.Next();
-		job->DebugDraw();
-		m_jobQueue.Add(job);
-	}
+	return false;
 }
 
 bool JobManager::AddJob(JobInfo *info, void *pData)
@@ -70,7 +104,10 @@ bool JobManager::AddJob(JobInfo *info, void *pData)
 			newJob->SetJobInfo(info);
 			if(newJob->IsJobPossible())
 			{
-				m_jobQueue.Add(newJob);
+				if(!AddJob(newJob))
+				{
+					delete newJob;
+				}
 			}
 			else
 			{
@@ -81,4 +118,38 @@ bool JobManager::AddJob(JobInfo *info, void *pData)
 	default:
 		return false;
 	}
+}
+
+// the lower the number is, the higher the priority
+Job *JobManager::GetHighestPriorityJob()
+{
+	if(m_numJobs == 0)
+	{
+		return NULL;
+	}
+
+	Job *highestPriorityJob = NULL;
+	unsigned int highestPriority = 100000;
+	unsigned int lowestFrameStamp = 100000;
+	for(int i = 0; i < m_numJobs; ++i)
+	{
+		Job *iJob = m_jobs[i];
+		if(iJob->GetPriority() == highestPriority)
+		{
+			if(iJob->GetFrameStamp() < lowestFrameStamp)
+			{
+				highestPriority = iJob->GetPriority();
+				lowestFrameStamp = iJob->GetFrameStamp();
+				highestPriorityJob = iJob;
+			}
+		}
+		else if(iJob->GetPriority() < highestPriority)
+		{
+			highestPriority = iJob->GetPriority();
+			lowestFrameStamp = iJob->GetFrameStamp();
+			highestPriorityJob = iJob;
+		}
+	}
+
+	return highestPriorityJob;
 }
